@@ -1,11 +1,12 @@
-import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import {  SignInButton,  useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
-import { api, RouterOutputs } from "~/utils/api";
+import { api } from "~/utils/api";
+import type  {RouterOutputs}  from "~/utils/api";
 import Image from "next/image";
 
 const CreatePostWizard = () => {
