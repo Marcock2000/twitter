@@ -8,8 +8,10 @@ dayjs.extend(relativeTime);
 import { api } from "~/utils/api";
 import type  {RouterOutputs}  from "~/utils/api";
 import Image from "next/image";
-import { LoadingPage } from "~/components/loading";
+import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
+
 
 const CreatePostWizard = () => {
 
@@ -22,8 +24,16 @@ const CreatePostWizard = () => {
     onSuccess: (data) => {
       setInput("");
       void ctx.posts.getAll.invalidate();
+    },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+    } else {
+      toast.error("Something went wrong");
     }
-  });
+  },});
+
 
 
   console.log(user);
@@ -45,9 +55,16 @@ const CreatePostWizard = () => {
       className="bg-transparent rounded-md p-2 ml-4 w-full" 
       disabled={isPosting}
       />
-    <button 
+    {input !== "" && !isPosting && ( <button 
       onClick={() => mutate({content: input})}
-      className="bg-slate-400 text-white rounded-md p-2 ml-4 w-20">Chirp</button>
+      disabled={isPosting}
+      className="bg-slate-400 text-white rounded-md p-2 ml-4 w-20">Chirp
+      </button>)}
+
+      {isPosting && (
+        <div className="flex items-center justify-center">
+        <LoadingSpinner size={20}/>
+        </div>)}
        
   </div>);
   } ;
