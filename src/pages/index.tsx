@@ -8,11 +8,25 @@ dayjs.extend(relativeTime);
 import { api } from "~/utils/api";
 import type  {RouterOutputs}  from "~/utils/api";
 import Image from "next/image";
-import { LoadingPage, LoadingSpinner } from "~/components/loading";
+import { LoadingPage } from "~/components/loading";
+import { useState } from "react";
 
 const CreatePostWizard = () => {
 
   const {user} = useUser();
+  const [input, setInput] = useState<string>("");
+  const ctx = api.useContext();
+
+
+  const {mutate, isLoading: isPosting } = api.posts.create.useMutation(
+    {onSuccess: () => {
+      setInput("");
+    ctx.posts.getAll.invalidate();
+  }
+  }
+  );
+
+
   console.log(user);
   if (!user) return null ;
 
@@ -24,7 +38,18 @@ const CreatePostWizard = () => {
     width={56}
     height={56}
     />
-   <input type="text" placeholder="What's happening?" className="bg-transparent rounded-md p-2 ml-4 w-full" /> 
+   <input 
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      disabled={isPosting}
+      type="text" 
+      placeholder="What's happening?" 
+      className="bg-transparent rounded-md p-2 ml-4 w-full" 
+      />
+    <button 
+      onClick={() => mutate({content: input})}
+      className="bg-slate-400 text-white rounded-md p-2 ml-4 w-20">Chirp</button>
+       
   </div>);
   } ;
 
@@ -37,13 +62,13 @@ const PostView = (props: PostWithUser) => {
       <Image src={author.profileImageUrl} alt="Profile Image" className="h-14 w-14 rounded-full " width={56} height={56}/>
       <div className="flex flex-col ml-4">
         <div className="flex gap-1 text-slate-300">
-          <span> {`@${author.username}`}</span>
+          <span>{`@${author.username} `}</span>
           <span className="font-thin">
              {`· ${dayjs(post.createdAt).fromNow()}` }
           </span>
 
         </div>
-        <span>   {post.content}</span>
+        <span className= "text-2xl">{post.content}</span>
         </div>
     </div>
   );
@@ -58,7 +83,7 @@ const Feed = () => {
   if (!data) return <div> Something went wrong</div>
 return (
   <div className="flex flex-col">
-  {[...data,...data]?.map((fullPost) => (
+  {data?.map((fullPost) => (
     <PostView {...fullPost} key= {fullPost.post.id}/>))}
 </div>
 )
