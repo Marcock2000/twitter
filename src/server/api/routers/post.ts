@@ -3,6 +3,16 @@ import {clerkClient} from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import { Redis } from "@upstash/redis";
+import { Ratelimit } from "@upstash/ratelimit";
+
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, "1 h"),
+  analytics: true
+});
+
 
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 
@@ -72,6 +82,13 @@ create: privateProcedure
   }
   const authorId = ctx.userId;
 
+  const  { success} = await ratelimit.limit(authorId)
+  if (!success) throw new TRPCError({
+    code: "TOO_MANY_REQUESTS",
+    message: "You are posting too fast",
+  }
+  );
+  
   const post = await ctx.prisma.post.create({
     data: {
       authorId,
