@@ -19,11 +19,8 @@ const CreatePostWizard = () => {
 
 
   const {mutate, isLoading: isPosting } = api.posts.create.useMutation(
-    {onSuccess: () => {
-      setInput("");
-    ctx.posts.getAll.invalidate();
-  }
-  }
+    {onSuccess: () => {setInput("");
+  }}
   );
 
 
