@@ -15,13 +15,9 @@ const CreatePostWizard = () => {
 
   const {user} = useUser();
   const [input, setInput] = useState<string>("");
-  const ctx = api.useContext();
 
 
-  const {mutate, isLoading: isPosting } = api.posts.create.useMutation(
-    {onSuccess: () => {setInput("");
-  }}
-  );
+  const {mutate} = api.posts.create.useMutation();
 
 
   console.log(user);
@@ -38,7 +34,6 @@ const CreatePostWizard = () => {
    <input 
       value={input}
       onChange={(e) => setInput(e.target.value)}
-      disabled={isPosting}
       type="text" 
       placeholder="What's happening?" 
       className="bg-transparent rounded-md p-2 ml-4 w-full" 
