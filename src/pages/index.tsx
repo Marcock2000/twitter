@@ -61,7 +61,7 @@ const CreatePostWizard = () => {
     {input !== "" && !isPosting && ( <button 
       onClick={() => mutate({content: input})}
       disabled={isPosting}
-      className="bg-slate-400 text-white rounded-md p-2 ml-4 w-20">Chirp
+      className="bg-slate-400 text-white rounded-md p-2 ml-4 w-20">Post
       </button>)}
 
       {isPosting && (
@@ -101,18 +101,16 @@ if (!userLoaded ) return <div/>
 
 
 
-  return (
-    <PageLayout>
-      <div className= "flex border-b border-slate-400 p-4">
-        {!isSignedIn && (
-         <div className="flex justify-center">
-          <SignInButton/>
-         </div>
-        )}
-        {isSignedIn && ( <div><SignOutButton/> 
-        <CreatePostWizard/></div>)}
-      </div>
-
+return (
+  <PageLayout>
+    <div className="flex border-b border-slate-400 p-4">
+      {!isSignedIn && (
+        <div className="flex justify-center">
+          <SignInButton />
+        </div>
+      )}
+      {isSignedIn && <CreatePostWizard />}
+    </div>
       <Feed/>
       </PageLayout>
     
