@@ -5,39 +5,13 @@ import { z } from "zod";
 
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
-
-
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, "1 h"),
-  analytics: true
-});
-
-
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
+import { filterUserForClient } from "~/server/helpers/filterUserForClient";
+import type { Post } from "@prisma/client";
 
-const filterUserForClient = (user: User) => {
-  return {
-    id: user.id,
-     username: user.username, 
-     profileImageUrl: user.profileImageUrl
-    };
-  }
+const addUserDataToPosts = async (posts: Post[]) => {
 
-
-
-
-export const postsRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async({ ctx }) => {
-    const posts = await ctx.prisma.post.findMany({
-      take: 100,
-      orderBy: [
-        {
-          createdAt: "desc",
-        }
-      ]    });
-
-    const users = (await clerkClient.users.getUserList({
+  const users = (await clerkClient.users.getUserList({
     userId: posts.map((post) => post.authorId),
     limit: 100, 
 
@@ -63,9 +37,50 @@ export const postsRouter = createTRPCRouter({
         username: author.username,
       },
       };
-  });
+    });
+  };
+
+
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, "1 h"),
+  analytics: true
+});
+
+
+
+
+
+export const postsRouter = createTRPCRouter({
+  getAll: publicProcedure.query(async({ ctx }) => {
+    const posts = await ctx.prisma.post.findMany({
+      take: 100,
+      orderBy: [
+        {
+          createdAt: "desc",
+        }
+      ]    });
+      return addUserDataToPosts(posts);
+
+
+
   }),
 
+getPostsByUserId: publicProcedure
+.input(
+  z.object({
+  userId: z.string(),
+})
+).query(({ ctx, input }) => 
+ctx.prisma.post.findMany({
+  where: {
+    authorId: input.userId,
+  },
+  take: 100,
+  orderBy: [{createdAt: "desc"}],
+}).then(addUserDataToPosts)
+),
 
 create: privateProcedure
 .input(

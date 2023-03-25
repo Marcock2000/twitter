@@ -1,7 +1,23 @@
 import {  useUser } from "@clerk/nextjs";
 import {type GetStaticProps, type NextPage } from "next";
 import Head from "next/head";
+import { LoadingPage } from "~/components/loading";
+import { PostView } from "~/components/postView";
 import {api} from "~/utils/api";
+
+const ProfileFeed = (props: {userId: string}) => {
+  const {data, isLoading} = api.posts.getPostsByUserId.useQuery({userId: props.userId,});
+
+  if (isLoading) return <div> <LoadingPage/> </div>
+
+  if (!data || data.length === 0)  return <div> User does not have any posts</div>
+
+  return <div className="flex flex-col">
+    {data.map((fullPost) => (
+    <PostView {...fullPost}  key={fullPost.post.id} />
+    ))}
+  </div>
+}
 
 
 const ProfilePage: NextPage<{username: string}> = ({username}) => {
@@ -31,6 +47,7 @@ const ProfilePage: NextPage<{username: string}> = ({username}) => {
           data.username ?? ""
         }`}</div>
         <div className="w-full border-b border-slate-400" />
+        <ProfileFeed userId={data.id}/>
         </PageLayout>
       </>
     );
