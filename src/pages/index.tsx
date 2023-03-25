@@ -11,6 +11,7 @@ import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import Link from "next/link";
 
 
 const CreatePostWizard = () => {
@@ -78,10 +79,12 @@ const PostView = (props: PostWithUser) => {
       <Image src={author.profileImageUrl} alt="Profile Image" className="h-14 w-14 rounded-full " width={56} height={56}/>
       <div className="flex flex-col ml-4">
         <div className="flex gap-1 text-slate-300">
-          <span>{`@${author.username} `}</span>
-          <span className="font-thin">
+          <Link href={`@${author.username}`}><span>{`@${author.username} `}</span></Link>
+
+
+          <Link href={`/post/${post.id} `}> <span className="font-thin">
              {`· ${dayjs(post.createdAt).fromNow()}` }
-          </span>
+          </span></Link>
 
         </div>
         <span className= "text-2xl">{post.content}</span>
