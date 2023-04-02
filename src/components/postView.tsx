@@ -1,4 +1,3 @@
-
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
@@ -6,11 +5,13 @@ import Link from "next/link";
 import type { RouterOutputs } from "~/utils/api";
 dayjs.extend(relativeTime);
 
-
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
 export const PostView = (props: PostWithUser) => {
   const {post,author} = props;
+
+  const spotifyPlayerUrl = post.content.replace("https://open.spotify.com/", "https://open.spotify.com/embed/");
+
   return (
     <div key={post.id} className="border-b border-slate-400 p-4 flex">
       <Image src={author.profileImageUrl} alt="Profile Image" className="h-14 w-14 rounded-full " width={56} height={56}/>
@@ -24,8 +25,14 @@ export const PostView = (props: PostWithUser) => {
           </span></Link>
 
         </div>
-        <span className= "text-2xl">{post.content}</span>
-        </div>
+        {post.content.includes("https://open.spotify.com/") ?
+          <div className="spotify-player">
+            <iframe src={spotifyPlayerUrl} width="300" height="380" frameBorder="0"  allow="encrypted-media"></iframe>
+          </div>
+          :
+          <span className= "text-2xl">{post.content}</span>
+        }
+      </div>
     </div>
   );
 }

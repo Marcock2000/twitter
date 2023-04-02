@@ -102,7 +102,7 @@ ctx.prisma.post.findMany({
 create: privateProcedure
 .input(
   z.object({
-    content: z.string().emoji().min(1).max(280),
+    content: z.string().url(),
   })
 )
 .mutation(async ({ ctx, input}) => {

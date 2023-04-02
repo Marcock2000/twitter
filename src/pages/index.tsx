@@ -54,7 +54,7 @@ const CreatePostWizard = () => {
       value={input}
       onChange={(e) => setInput(e.target.value)}
       type="text" 
-      placeholder="What's happening?" 
+      placeholder="Post a spotify link!" 
       className="bg-transparent rounded-md p-2 ml-4 w-full" 
       disabled={isPosting}
       />
