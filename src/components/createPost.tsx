@@ -26,7 +26,7 @@ export const SpotifySearchBar = () => {
         if (errorMessage && errorMessage[0]) {
           toast.error(errorMessage[0]);
         } else {
-          toast.error("Something went wrong");
+          toast.error("Only one post per day 🤬 ");
         }
       },
     });
