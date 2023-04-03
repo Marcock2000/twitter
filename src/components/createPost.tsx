@@ -14,8 +14,8 @@ export const SpotifySearchBar = () => {
   const [input, setInput] = useState<string>("");
   const [mutationInput, setMutation] = useState<string>("");
   const ctx = api.useContext();
-  const CLIENT_ID = "ed40318d54cc4576bffae7f85dddd5f0";
-  const CLIENT_SECRET = "a7707566ff7149c28c0b3bdbe20d0430";
+  const CLIENT_ID = process.env.CLIENT_ID
+  const CLIENT_SECRET = process.env.CLIENT_SECRET
 
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: (data) => {
@@ -64,6 +64,7 @@ export const SpotifySearchBar = () => {
         }
       );
 
+
       const accessToken = tokenResponse.data.access_token;
 
       const response = await axios.get(
@@ -76,7 +77,7 @@ export const SpotifySearchBar = () => {
           },
         }
       );
-
+     
       const tracks = response.data.tracks.items.map((item: any) => ({
         id: item.id,
         name: item.name,
@@ -89,6 +90,8 @@ export const SpotifySearchBar = () => {
       setIsLoading(false);
     } catch (error) {
       console.error(error);
+      console.log(CLIENT_ID)
+
       toast.error("Failed to fetch search results");
       setIsLoading(false);
     }
