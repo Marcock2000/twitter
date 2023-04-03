@@ -26,8 +26,8 @@ export const PostView = (props: PostWithUser) => {
 
         </div>
         {post.content.includes("https://open.spotify.com/") ?
-          <div className="spotify-player">
-            <iframe src={spotifyPlayerUrl} width="300" height="380" frameBorder="0"  allow="encrypted-media"></iframe>
+          <div className="spotify-player mt-2">
+            <iframe src={spotifyPlayerUrl} width="250" height="280" frameBorder="0"  allow="encrypted-media"></iframe>
           </div>
           :
           <span className= "text-2xl">{post.content}</span>
