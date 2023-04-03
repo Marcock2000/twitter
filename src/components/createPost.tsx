@@ -8,76 +8,72 @@ import { LoadingSpinner } from "./loading";
 import Image from "next/image";
 
 export const SpotifySearchBar = () => {
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useUser();
-  const [input, setInput] = useState<string>("");
-  const [mutationInput, setMutation] = useState<string>("");
-  const ctx = api.useContext();
-  const CLIENT_ID = process.env.CLIENT_ID
-  const CLIENT_SECRET = process.env.CLIENT_SECRET
-
-  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
-    onSuccess: (data) => {
-      setInput("");
-      void ctx.posts.getAll.invalidate();
-      setSearchResults([])
-    },
-    onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors.content;
-      if (errorMessage && errorMessage[0]) {
-        toast.error(errorMessage[0]);
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { user } = useUser();
+    const [input, setInput] = useState<string>("");
+    const [mutationInput, setMutation] = useState<string>("");
+    const ctx = api.useContext();
+  
+    const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+      onSuccess: (data) => {
+        setInput("");
+        ctx.posts.getAll.invalidate();
+        setSearchResults([]);
+      },
+      onError: (e) => {
+        const errorMessage = e.data?.zodError?.fieldErrors.content;
+        if (errorMessage && errorMessage[0]) {
+          toast.error(errorMessage[0]);
+        } else {
+          toast.error("Something went wrong");
+        }
+      },
+    });
+  
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = event.target.value;
+      setInput(inputValue);
+  
+      if (inputValue.trim() !== "") {
+        setIsLoading(true);
+        searchDebounced(inputValue);
       } else {
-        toast.error("Something went wrong");
+        setSearchResults([]);
       }
-    },
-  });
+    };
+  
+    const handleSongSelect = (name: string, spotifyUrl: string) => {
+      setInput(name);
+      setMutation(spotifyUrl);
+    };
+  
+    const search = async (query: string) => {
+      try {
+        const tokenResponse = await axios.post(
+          "https://accounts.spotify.com/api/token",
+          "grant_type=client_credentials",
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              Authorization: `Basic ${Buffer.from(`${process.env.NEXT_PUBLIC_CLIENT_ID}:${process.env.NEXT_PUBLIC_CLIENT_SECRET}`).toString("base64")}`,
+            },
+          }
+        );
+  
+        const accessToken = tokenResponse.data.access_token;
+  
+        const response = await axios.get(
+          `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+            query
+          )}&type=track&limit=10`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = event.target.value;
-    setInput(inputValue);
-
-    if (inputValue.trim() !== "") {
-      setIsLoading(true);
-      searchDebounced(inputValue);
-    } else {
-      setSearchResults([]);
-    }
-  };
-
-  const handleSongSelect = (name: string, spotifyUrl: string) => {
-    setInput(name);
-    setMutation(spotifyUrl);
-    console.log(spotifyUrl)
-  };
-
-  const search = async (query: string) => {
-    try {
-      const tokenResponse = await axios.post(
-        "https://accounts.spotify.com/api/token",
-        "grant_type=client_credentials",
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
-          },
-        }
-      );
-
-
-      const accessToken = tokenResponse.data.access_token;
-
-      const response = await axios.get(
-        `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-          query
-        )}&type=track&limit=10`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-     
       const tracks = response.data.tracks.items.map((item: any) => ({
         id: item.id,
         name: item.name,
@@ -90,8 +86,6 @@ export const SpotifySearchBar = () => {
       setIsLoading(false);
     } catch (error) {
       console.error(error);
-      console.log(CLIENT_ID)
-
       toast.error("Failed to fetch search results");
       setIsLoading(false);
     }
@@ -100,10 +94,7 @@ export const SpotifySearchBar = () => {
   const searchDebounced = useDebouncedCallback(search, 500);
 
 
-
-  console.log(user);
   if (!user) return null ;
-
 
 
     return (
