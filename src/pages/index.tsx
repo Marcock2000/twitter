@@ -1,17 +1,11 @@
-import {  SignInButton,  SignOutButton,  useUser } from "@clerk/nextjs";
+import {  SignInButton,  useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
-import Head from "next/head";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 import { api } from "~/utils/api";
-import type  {RouterOutputs}  from "~/utils/api";
-import Image from "next/image";
-import { LoadingPage, LoadingSpinner } from "~/components/loading";
-import { useState } from "react";
-import { toast } from "react-hot-toast";
-import Link from "next/link";
+import { LoadingPage } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postView";
 import { SpotifySearchBar } from "~/components/createPost";
