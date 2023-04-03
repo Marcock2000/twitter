@@ -44,7 +44,7 @@ const addUserDataToPosts = async (posts: Post[]) => {
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, "1 h"),
+  limiter: Ratelimit.slidingWindow(1, "86400 s"),
   analytics: true
 });
 

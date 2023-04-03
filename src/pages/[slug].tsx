@@ -1,9 +1,15 @@
-import {  useUser } from "@clerk/nextjs";
-import {type GetStaticProps, type NextPage } from "next";
+import { type GetStaticProps, type NextPage } from "next";
 import Head from "next/head";
 import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postView";
-import {api} from "~/utils/api";
+import { api } from "~/utils/api";
+
+import Image from "next/image";
+import { PageLayout } from "~/components/layout";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
+import { SignOutButton, useUser } from "@clerk/nextjs";
+import Link from "next/link";
+
 
 const ProfileFeed = (props: {userId: string}) => {
   const {data, isLoading} = api.posts.getPostsByUserId.useQuery({userId: props.userId,});
@@ -22,7 +28,7 @@ const ProfileFeed = (props: {userId: string}) => {
 
 const ProfilePage: NextPage<{username: string}> = ({username}) => {
 
-
+  const { isLoaded: userLoaded, isSignedIn} = useUser();
   const { data} = api.profile.getUserByUsername.useQuery({username,});
 
   if (!data) return <div> 404</div>
@@ -32,6 +38,21 @@ const ProfilePage: NextPage<{username: string}> = ({username}) => {
       <Head>
         <title>{data.username}</title>
       </Head>
+      <div className="flex flex-row flex-row-1 h-screen w-full ">
+  <div className= "flex flex-col flex-col-auto  w-1/4 p-5"> 
+
+  <Link href ="/" className="text-2xl font-bold mt-10 text-slate-300 font-serif">Sparrow</Link>
+
+      <p className="text-lg font-thin mt-10 text-slate-300 "> 
+      You want to let the world know what you're listening to, but there's just something awkward about posting your favorite songs on social media.
+      <br/> 
+      <br/>Enter Sparrows, a place to share your brilliant music taste without being obnoxious. 
+      You only get one song per day, though, so make it count.</p>
+  
+
+  </div>
+
+
       <PageLayout>
         <div className="relative h-36 bg-slate-600">
           <Image
@@ -49,25 +70,23 @@ const ProfilePage: NextPage<{username: string}> = ({username}) => {
         <div className="w-full border-b border-slate-400" />
         <ProfileFeed userId={data.id}/>
         </PageLayout>
+        <div className= "flex flex-col flex-col-auto  w-1/4 p-5"> 
+          {isSignedIn && (
+          <div className="flex text-lg font-semibold">
+          <SignOutButton />
+          </div>)}
+      </div>
+      
+      </div>
       </>
     );
   };
 
 
-import { createProxySSGHelpers } from '@trpc/react-query/ssg';
-import { prisma } from "~/server/db";
-import { appRouter } from "~/server/api/root";
-import superjson from 'superjson';
-import { PageLayout } from "~/components/layout";
-import Image from "next/image";
-
 export const getStaticProps: GetStaticProps = async (context) => {
-  const ssg = createProxySSGHelpers({
-    router: appRouter,
-    ctx: {prisma, userId: null},
-    transformer: superjson, // optional - adds superjson serialization
-  })
+  const ssg = generateSSGHelper()
   const slug = context.params?.slug;
+
   if (typeof slug !== 'string') {
     throw new Error('No slug');
   }

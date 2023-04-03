@@ -1,4 +1,4 @@
-import {  SignInButton,  useUser } from "@clerk/nextjs";
+import {  SignInButton,  SignOutButton,  useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 
 import dayjs from "dayjs";
@@ -42,6 +42,19 @@ if (!userLoaded ) return <div/>
 
 
 return (
+  <div className="flex flex-row flex-row-1 h-screen w-full ">
+  <div className= "flex flex-col flex-col-auto  w-1/4 p-5"> 
+
+      <p className="text-2xl font-bold mt-10 text-slate-300 font-serif">Sparrow</p>
+      <p className="text-lg font-thin mt-10 text-slate-300 "> 
+      You want to let the world know what you're listening to, but there's just something awkward about posting your favorite songs on social media.
+      <br/> 
+      <br/>Enter Sparrows, a place to share your brilliant music taste without being obnoxious. 
+      You only get one song per day, though, so make it count.</p>
+  
+
+  </div>
+  
   <PageLayout>
     <div className="flex border-b border-slate-400 p-4">
       {!isSignedIn && (
@@ -49,13 +62,25 @@ return (
           <SignInButton />
         </div>
       )}
+
       {isSignedIn && <SpotifySearchBar/>}
     </div>
       <Feed/>
       </PageLayout>
+      <div className= "flex flex-col flex-col-auto  w-1/4 p-5"> 
+      {isSignedIn && (
+    
+    <div className="flex text-lg font-semibold">
+    <SignOutButton />
+
+    </div>)}
+      </div>
+  </div>
     
   );
 };
 
 
 export default Home;
+
+
