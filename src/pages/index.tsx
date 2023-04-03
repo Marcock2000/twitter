@@ -14,63 +14,9 @@ import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postView";
+import { SpotifySearchBar } from "~/components/createPost";
 
 
-const CreatePostWizard = () => {
-
-  const {user} = useUser();
-  const [input, setInput] = useState<string>("");
-  const ctx = api.useContext();
-
-
-  const {mutate, isLoading: isPosting } = api.posts.create.useMutation({
-    onSuccess: (data) => {
-      setInput("");
-      void ctx.posts.getAll.invalidate();
-    },
-    onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors.content;
-      if (errorMessage && errorMessage[0]) {
-        toast.error(errorMessage[0]);
-    } else {
-      toast.error("Something went wrong");
-    }
-  },});
-
-
-
-  console.log(user);
-  if (!user) return null ;
-
-  return (
-  <div className="flex w-full gap-3 ">
-    <Image src={user.profileImageUrl} 
-    alt="Profile Image" 
-    className="h-14 w-14 rounded-full "
-    width={56}
-    height={56}
-    />
-   <input 
-      value={input}
-      onChange={(e) => setInput(e.target.value)}
-      type="text" 
-      placeholder="Post a spotify link!" 
-      className="bg-transparent rounded-md p-2 ml-4 w-full" 
-      disabled={isPosting}
-      />
-    {input !== "" && !isPosting && ( <button 
-      onClick={() => mutate({content: input})}
-      disabled={isPosting}
-      className="bg-slate-400 text-white rounded-md p-2 ml-4 w-20">Post
-      </button>)}
-
-      {isPosting && (
-        <div className="flex items-center justify-center">
-        <LoadingSpinner size={20}/>
-        </div>)}
-       
-  </div>);
-  } ;
 
 
 const Feed = () => {
@@ -109,7 +55,7 @@ return (
           <SignInButton />
         </div>
       )}
-      {isSignedIn && <CreatePostWizard />}
+      {isSignedIn && <SpotifySearchBar/>}
     </div>
       <Feed/>
       </PageLayout>
