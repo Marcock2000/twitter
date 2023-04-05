@@ -7,3 +7,10 @@ export const filterUserForClient = (user: User) => {
     };
   }
 
+  export const filterUserForClientID = (user: User) => {
+    return {
+      id: user.id,
+      };
+    }
+  
+

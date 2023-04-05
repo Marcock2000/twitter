@@ -9,6 +9,8 @@ import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/ap
 import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 import type { Post } from "@prisma/client";
 
+
+
 const addUserDataToPosts = async (posts: Post[]) => {
 
   const users = (await clerkClient.users.getUserList({
@@ -97,6 +99,25 @@ ctx.prisma.post.findMany({
   take: 100,
   orderBy: [{createdAt: "desc"}],
 }).then(addUserDataToPosts)
+),
+
+getLatestPostCreatedAtByUserId: publicProcedure
+.input(
+  z.object({
+    userId: z.string(),
+  })
+).query(({ ctx, input }) =>
+  ctx.prisma.post.findMany({
+    where: {
+      authorId: input.userId,
+    },
+    take: 1,
+    orderBy: [{ createdAt: "desc" }],
+    select: {
+      createdAt: true,
+    },
+  })
+  .then(posts => posts[0]?.createdAt)
 ),
 
 create: privateProcedure

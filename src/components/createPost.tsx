@@ -3,18 +3,30 @@ import useDebouncedCallback from "debounce";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
-import { api } from "~/utils/api";
+import { api, RouterOutputs } from "~/utils/api";
 import { LoadingSpinner } from "./loading";
 import Image from "next/image";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
-export const SpotifySearchBar = () => {
+type PostWithUser = RouterOutputs["profile"]["getUserID"];
+
+export const SpotifySearchBar = (props: PostWithUser) => {
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { user } = useUser();
     const [input, setInput] = useState<string>("");
     const [mutationInput, setMutation] = useState<string>("");
     const ctx = api.useContext();
+    const {id: author} = props;
   
+    const latestPost = api.posts.getLatestPostCreatedAtByUserId.useQuery({ userId: author });
+    const timestampOfLastPost = dayjs(latestPost.data);
+    const hoursSinceLastPost = timestampOfLastPost.fromNow();
+    const isLargerThanDayAgo = timestampOfLastPost.isBefore(dayjs().subtract(1, 'day'));
+    console.log(isLargerThanDayAgo);
+
     const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
       onSuccess: (data) => {
         setInput("");
@@ -116,11 +128,11 @@ export const SpotifySearchBar = () => {
           {isLoading && <LoadingSpinner />}
           {input !== "" && !isPosting && (
           <button 
-            onClick={() => mutate({content: mutationInput})}
-            disabled={isPosting}
-            className="bg-slate-400 text-white rounded-md p-2 w-20 mt-2">
-              Post
-          </button>
+          onClick={() => isLargerThanDayAgo ? mutate({content: mutationInput}) : toast.error("Only one post per day 🤬 ")}
+          disabled={isPosting}
+          className="bg-slate-400 text-white rounded-md p-2 w-20 mt-2">
+            Post
+        </button>
         )}
         </div>
         {searchResults.length > 0 && (

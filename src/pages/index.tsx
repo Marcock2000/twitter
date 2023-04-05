@@ -34,7 +34,8 @@ return (
 const Home: NextPage = () => {
   api.posts.getAll.useQuery();
 
-  const { isLoaded: userLoaded, isSignedIn} = useUser();
+  const { isLoaded: userLoaded, isSignedIn, user} = useUser();
+  const authorID = user?.id ?? "";
   
   // if both arent loaded 
 if (!userLoaded ) return <div/>
@@ -63,7 +64,7 @@ return (
         </div>
       )}
 
-      {isSignedIn && <SpotifySearchBar/>}
+      {isSignedIn && <SpotifySearchBar id={user.id} username={null} profileImageUrl={""}  />}
     </div>
       <Feed/>
       </PageLayout>
