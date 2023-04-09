@@ -9,7 +9,7 @@ import { LoadingPage } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postView";
 import { SpotifySearchBar } from "~/components/createPost";
-import { Head } from "next/document";
+import { Head } from "next/head";
 
 
 
