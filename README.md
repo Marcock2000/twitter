@@ -13,4 +13,4 @@ A website to share music.
 * A more friendly auth system LOL right now it only works with GitHub accounts, will probably change to Gmail or something.
 *A more efficient way to interact with spotify's API, i'm sure there's better ways as this was some caveman approach that just happened to work the first time. 
 
-*F*ck around and find out!
+*  F*ck around and find out!

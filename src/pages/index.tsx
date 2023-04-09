@@ -9,6 +9,7 @@ import { LoadingPage } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postView";
 import { SpotifySearchBar } from "~/components/createPost";
+import { Head } from "next/document";
 
 
 
@@ -43,6 +44,14 @@ if (!userLoaded ) return <div/>
 
 
 return (
+  <>
+  <Head>
+    <title>Sparrows</title>
+    <script defer data-domain="sparrows-nine.vercel.app" src="https://plausible.io/js/script.js"></script>
+    
+
+
+  </Head>
   <div className="flex flex-row flex-row-1 h-screen w-full ">
   <div className= "flex flex-col flex-col-auto  w-1/4 p-5"> 
 
@@ -77,8 +86,10 @@ return (
     </div>)}
       </div>
   </div>
+  </>
     
   );
+  
 };
 
 

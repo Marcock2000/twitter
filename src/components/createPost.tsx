@@ -25,7 +25,6 @@ export const SpotifySearchBar = (props: PostWithUser) => {
     const timestampOfLastPost = dayjs(latestPost.data);
     const hoursSinceLastPost = timestampOfLastPost.fromNow();
     const isLargerThanDayAgo = timestampOfLastPost.isBefore(dayjs().subtract(1, 'day'));
-    console.log(isLargerThanDayAgo);
 
     const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
       onSuccess: (data) => {
@@ -97,7 +96,6 @@ export const SpotifySearchBar = (props: PostWithUser) => {
       setSearchResults(tracks);
       setIsLoading(false);
     } catch (error) {
-      console.error(error);
       toast.error("Failed to fetch search results");
       setIsLoading(false);
     }
